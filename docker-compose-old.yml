@@ -1,0 +1,100 @@
+version: '3.3'
+services:
+    web:
+        image: nginx:latest
+        platform: "${DOCKER_PLATFORM}"
+        container_name: "${PROJECT_ID}_web"
+        restart: ${DOCKER_RESTART}
+        ports:
+            - "${PORT_WEB_HTTP}:80"
+            # - "${PORT_WEB_HTTPS}:443"
+            #- "6001:6001"
+        volumes:
+            - ./:${PROJECT_ROOT}:cached
+            - ./docker/sites_enabled/${NGINX_CONF}.conf:/etc/nginx/conf.d/site.conf:cached
+        #			- ./certbot/conf:/etc/letsencrypt:ro
+        #			- ./certbot/www:${PROJECT_ROOT}/public/certbot:ro
+        links:
+            - php
+        #command: "/bin/sh -c 'while :; do sleep 6h & wait $${!}; nginx -s reload; done & nginx -g \"daemon off;\"'"
+    php:
+        image: kornilk/php:8.1
+        container_name: "${PROJECT_ID}_php"
+        platform: "${DOCKER_PLATFORM}"
+        restart: ${DOCKER_RESTART}
+        # build:
+        #     context: docker
+        #     dockerfile: Dockerfile
+            # args:
+            #     PROJECT_ROOT: ${PROJECT_ROOT}
+            #     PROJECT_DOMAIN: ${PROJECT_DOMAIN}
+            #     DOCKER_USER: ${DOCKER_USER}
+            #     MAIL_MAILER: ${MAIL_MAILER}
+            #     MAIL_HOST: ${MAIL_HOST}
+            #     MAIL_PORT: ${MAIL_PORT}
+            #     MAIL_USERNAME: ${MAIL_USERNAME}
+            #     MAIL_PASSWORD: ${MAIL_PASSWORD}
+            #     MAIL_ENCRYPTION: ${MAIL_ENCRYPTION}
+            #     QUENE_MONITORING: ${QUENE_MONITORING}
+            #     QUEUE_CONNECTION: ${QUEUE_CONNECTION}
+        volumes:
+            - ./:${PROJECT_ROOT}:cached
+            - ./.user.ini:/usr/local/etc/php/conf.d/custom.ini:cached
+            - ./docker/cronetab:/etc/cron.d/cron
+        environment:
+            PROJECT_ROOT: "${PROJECT_ROOT}"
+            PROJECT_DOMAIN: ${PROJECT_DOMAIN}
+            DOCKER_USER: ${DOCKER_USER}
+            MAIL_MAILER: ${MAIL_MAILER}
+            MAIL_HOST: ${MAIL_HOST}
+            MAIL_PORT: ${MAIL_PORT}
+            MAIL_USERNAME: ${MAIL_USERNAME}
+            MAIL_PASSWORD: ${MAIL_PASSWORD}
+            MAIL_ENCRYPTION: ${MAIL_ENCRYPTION}
+            QUENE_MONITORING: ${QUENE_MONITORING}
+            QUEUE_CONNECTION: ${QUEUE_CONNECTION}
+        links:
+          #  - memcached
+            - db
+        working_dir: ${PROJECT_ROOT}
+        user: ${DOCKER_USER}
+        extra_hosts:
+            - "${PROJECT_DOMAIN}:127.0.0.1"
+    db:
+        image: mysql:8.0.33
+        platform: "${DOCKER_PLATFORM}"
+        container_name: "${PROJECT_ID}_mysql"
+        restart: ${DOCKER_RESTART}
+        ports:
+            - "${PORT_DB}:3306"
+        volumes:
+            - ./docker/db/:/var/lib/mysql
+ #           - ./docker/mysql_conf:/etc/mysql/conf.d
+        environment:
+            MYSQL_ROOT_PASSWORD: "${DB_PASSWORD}"
+            MYSQL_DATABASE: "${PROJECT_ID}"
+    pma:
+        image: phpmyadmin/phpmyadmin
+        platform: "${DOCKER_PLATFORM}"
+        container_name: "${PROJECT_ID}_pma"
+        restart: ${DOCKER_RESTART}
+        environment:
+            PMA_HOST: "${DB_HOST}"
+            UPLOAD_LIMIT: 300M
+        ports:
+            - "${PORT_PMA_HTTP}:80"
+            # - "${PORT_PMA_HTTPS}:443"
+
+    # memcached:
+    #     container_name: "${PROJECT_ID}_memcached"
+    #     restart: ${DOCKER_RESTART}
+    #     image: memcached:latest
+
+#	certbot:
+#		image: certbot/certbot
+#		container_name: "${PROJECT_ID}_certbot"
+#       restart: ${DOCKER_RESTART}
+#		volumes:
+#			- ./certbot/conf:/etc/letsencrypt:rw
+#			- ./certbot/www:${PROJECT_ROOT}/public/certbot:rw
+#		entrypoint: "/bin/sh -c 'trap exit TERM; while :; do certbot renew; sleep 12h & wait $${!}; done;'"

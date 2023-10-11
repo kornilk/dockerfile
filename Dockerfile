@@ -2,7 +2,7 @@
 FROM php:8.1-fpm
 
 RUN apt-get update
-RUN apt-get install -y libfreetype6-dev libjpeg62-turbo-dev zlib1g-dev libicu-dev g++ libpng-dev libmemcached-dev libpq-dev libzip-dev nano mc cron
+RUN apt-get install -y libfreetype6-dev libjpeg62-turbo-dev zlib1g-dev libicu-dev g++ libpng-dev libmemcached-dev libpq-dev libzip-dev nano mc cron supervisor
 RUN pecl install memcached msmtp
 RUN docker-php-ext-configure gd --with-freetype=/usr/include/ --with-jpeg=/usr/include/
 RUN docker-php-ext-install -j$(nproc) intl pdo_mysql bcmath exif gd pdo mysqli zip
@@ -20,9 +20,20 @@ RUN curl -o /tmp/composer-setup.php https://getcomposer.org/installer \
 # RUN npm install --global --unsafe-perm puppeteer
 # RUN chmod -R o+rx /usr/lib/node_modules/puppeteer/.local-chromium
 
+ENV PROJECT_ROOT="/projectroot"
+ENV PROJECT_DOMAIN="localhost"
+ENV DOCKER_USER="root"
+ENV MAIL_MAILER="sendmail"
+ENV MAIL_HOST=
+ENV MAIL_PORT=
+ENV MAIL_USERNAME=
+ENV MAIL_FROM_ADDRESS=
+ENV QUENE_MONITORING=
+ENV QUEUE_CONNECTION=
 
-# ADD docker.sh /usr/local/bin/docker.sh
+ADD docker.sh /usr/local/bin/docker.sh
 
-# RUN chmod 777 /usr/local/bin/docker.sh
+RUN chmod 777 /usr/local/bin/docker.sh
+ENTRYPOINT /usr/local/bin/docker.sh PROJECT_ROOT="${PROJECT_ROOT}" PROJECT_DOMAIN="${PROJECT_DOMAIN}" DOCKER_USER="${DOCKER_USER}" MAIL_DRIVER="${MAIL_DRIVER}" MAIL_HOST="${MAIL_HOST}" MAIL_PORT="${MAIL_PORT}" MAIL_USERNAME="${MAIL_USERNAME}" MAIL_PASSWORD="${MAIL_PASSWORD}" MAIL_FROM_ADDRESS="${MAIL_FROM_ADDRESS}" QUENE_MONITORING="${QUENE_MONITORING}" QUEUE_CONNECTION="${QUEUE_CONNECTION}"
 
-# CMD /usr/local/bin/docker.sh PROJECT_ROOT="${PROJECT_ROOT}" PROJECT_DOMAIN="${PROJECT_DOMAIN}" DOCKER_USER="${DOCKER_USER}" MAIL_DRIVER="${MAIL_DRIVER}" MAIL_HOST="${MAIL_HOST}" MAIL_PORT="${MAIL_PORT}" MAIL_USERNAME="${MAIL_USERNAME}" MAIL_PASSWORD="${MAIL_PASSWORD}" MAIL_FROM_ADDRESS="${MAIL_FROM_ADDRESS}" QUENE_MONITORING="${QUENE_MONITORING}" QUEUE_CONNECTION="${QUEUE_CONNECTION}"
+#docker build -t kornilk/php:8.1 .
