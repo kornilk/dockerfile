@@ -19,3 +19,10 @@ RUN curl -o /tmp/composer-setup.php https://getcomposer.org/installer \
 
 # RUN npm install --global --unsafe-perm puppeteer
 # RUN chmod -R o+rx /usr/lib/node_modules/puppeteer/.local-chromium
+
+
+# ADD docker.sh /usr/local/bin/docker.sh
+
+# RUN chmod 777 /usr/local/bin/docker.sh
+
+# CMD /usr/local/bin/docker.sh PROJECT_ROOT="${PROJECT_ROOT}" PROJECT_DOMAIN="${PROJECT_DOMAIN}" DOCKER_USER="${DOCKER_USER}" MAIL_DRIVER="${MAIL_DRIVER}" MAIL_HOST="${MAIL_HOST}" MAIL_PORT="${MAIL_PORT}" MAIL_USERNAME="${MAIL_USERNAME}" MAIL_PASSWORD="${MAIL_PASSWORD}" MAIL_FROM_ADDRESS="${MAIL_FROM_ADDRESS}" QUENE_MONITORING="${QUENE_MONITORING}" QUEUE_CONNECTION="${QUEUE_CONNECTION}"
