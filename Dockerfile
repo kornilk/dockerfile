@@ -2,11 +2,12 @@
 FROM php:8.1-fpm
 
 RUN apt-get update
-RUN apt-get install -y libfreetype6-dev libjpeg62-turbo-dev zlib1g-dev libicu-dev g++ libpng-dev libmemcached-dev libpq-dev libzip-dev nano mc cron supervisor
-RUN pecl install memcached msmtp xdebug
+RUN apt-get install -y libfreetype6-dev libjpeg62-turbo-dev zlib1g-dev libicu-dev g++ libpng-dev libmemcached-dev libpq-dev libzip-dev nano mc cron supervisor 
+RUN apt-get install -y libmagickwand-dev --no-install-recommends
+RUN pecl install memcached msmtp xdebug imagick
 RUN docker-php-ext-configure gd --with-freetype=/usr/include/ --with-jpeg=/usr/include/
 RUN docker-php-ext-install -j$(nproc) intl pdo_mysql bcmath exif gd pdo mysqli zip
-RUN docker-php-ext-enable memcached opcache xdebug
+RUN docker-php-ext-enable memcached opcache imagick
 
 RUN curl -o /tmp/composer-setup.php https://getcomposer.org/installer \
 && curl -o /tmp/composer-setup.sig https://composer.github.io/installer.sig \
