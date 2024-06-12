@@ -1,10 +1,10 @@
 
-FROM php:8.2-fpm
+FROM php:8.2.20-fpm
 
 RUN apt-get update
 RUN apt-get install -y libfreetype6-dev libjpeg62-turbo-dev zlib1g-dev libicu-dev g++ libpng-dev libmemcached-dev libpq-dev libzip-dev nano mc cron supervisor 
 RUN apt-get install -y libmagickwand-dev --no-install-recommends
-RUN pecl install memcached msmtp xdebug imagick
+RUN pecl install memcached msmtp imagick
 RUN docker-php-ext-configure gd --with-freetype=/usr/include/ --with-jpeg=/usr/include/
 RUN docker-php-ext-install -j$(nproc) intl pdo_mysql bcmath exif gd pdo mysqli zip
 RUN docker-php-ext-enable memcached opcache imagick
