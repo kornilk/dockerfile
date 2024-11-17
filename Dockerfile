@@ -1,12 +1,12 @@
 FROM php:7.4-fpm
 
 RUN apt-get update
-RUN apt-get install -y libfreetype6-dev libjpeg62-turbo-dev zlib1g-dev libicu-dev libwebp-dev libxpm-dev g++ libpng-dev libmemcached-dev libpq-dev libzip-dev nano mc cron supervisor
+RUN apt-get install -y libfreetype6-dev libjpeg62-turbo-dev zlib1g-dev libicu-dev libwebp-dev libxpm-dev g++ libpng-dev libmemcached-dev libpq-dev libzip-dev nano mc cron supervisor sendmail
+RUN rm -rf /etc/cron.*/*
 RUN pecl install memcached-3.1.3 msmtp
 RUN docker-php-ext-configure gd --enable-gd --with-webp --with-jpeg --with-xpm --with-freetype
 RUN docker-php-ext-install -j$(nproc) intl pdo_mysql bcmath exif gd pdo mysqli zip
 RUN docker-php-ext-enable memcached opcache
-
 
 RUN curl -o /tmp/composer-setup.php https://getcomposer.org/installer \
 && curl -o /tmp/composer-setup.sig https://composer.github.io/installer.sig \
