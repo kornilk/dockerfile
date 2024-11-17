@@ -2,7 +2,8 @@
 FROM php:8.1-fpm
 
 RUN apt-get update
-RUN apt-get install -y libfreetype6-dev libjpeg62-turbo-dev zlib1g-dev libicu-dev g++ libpng-dev libmemcached-dev libpq-dev libzip-dev nano mc cron supervisor 
+RUN apt-get install -y libfreetype6-dev libjpeg62-turbo-dev zlib1g-dev libicu-dev g++ libpng-dev libmemcached-dev libpq-dev libzip-dev nano mc cron supervisor sendmail
+RUN rm -rf /etc/cron.*/*
 RUN apt-get install -y libmagickwand-dev --no-install-recommends
 RUN pecl install memcached msmtp imagick
 RUN docker-php-ext-configure gd --with-freetype=/usr/include/ --with-jpeg=/usr/include/
@@ -37,5 +38,5 @@ ADD docker.sh /usr/local/bin/docker.sh
 RUN chmod 777 /usr/local/bin/docker.sh
 ENTRYPOINT /usr/local/bin/docker.sh PROJECT_ROOT="${PROJECT_ROOT}" PROJECT_DOMAIN="${PROJECT_DOMAIN}" DOCKER_USER="${DOCKER_USER}" MAIL_DRIVER="${MAIL_DRIVER}" MAIL_HOST="${MAIL_HOST}" MAIL_PORT="${MAIL_PORT}" MAIL_USERNAME="${MAIL_USERNAME}" MAIL_PASSWORD="${MAIL_PASSWORD}" MAIL_FROM_ADDRESS="${MAIL_FROM_ADDRESS}" QUENE_MONITORING="${QUENE_MONITORING}" QUEUE_CONNECTION="${QUEUE_CONNECTION}"
 
-#docker build -t kornilk/php:8.1 .
+#docker build --platform linux/amd64 -t kornilk/php:8.1 .
 #docker push kornilk/php:8.1

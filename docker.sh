@@ -61,4 +61,12 @@ then echo "[supervisord]" >> /etc/supervisor/conf.d/laravel-worker.conf \
 && sed -i "/(default 0700)/a chown=$DOCKER_USER:www-data   ;" /etc/supervisor/supervisord.conf \
 && /usr/bin/supervisord;
 fi
+
+echo "sendmail_path=/usr/sbin/sendmail -t -i" >> /usr/local/etc/php/conf.d/sendmail.ini
+
+/bin/sh/service sendmail restart
+/bin/sh/echo "$(hostname -i)\t$(hostname) $(hostname).localhost" >> /etc/hosts
+
+cron -f -L 2
+
 php-fpm
