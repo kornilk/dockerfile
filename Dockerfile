@@ -3,7 +3,10 @@ FROM php:8.1-fpm
 
 RUN apt-get update
 RUN apt-get install -y libfreetype6-dev libjpeg62-turbo-dev zlib1g-dev libicu-dev g++ libpng-dev libmemcached-dev libpq-dev libzip-dev nano mc cron supervisor sendmail
+
 RUN rm -rf /etc/cron.*/*
+RUN echo "sendmail_path=/usr/sbin/sendmail -t -i" >> /usr/local/etc/php/conf.d/sendmail.ini
+
 RUN apt-get install -y libmagickwand-dev --no-install-recommends
 RUN pecl install memcached msmtp imagick
 RUN docker-php-ext-configure gd --with-freetype=/usr/include/ --with-jpeg=/usr/include/

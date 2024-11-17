@@ -62,11 +62,9 @@ then echo "[supervisord]" >> /etc/supervisor/conf.d/laravel-worker.conf \
 && /usr/bin/supervisord;
 fi
 
-echo "sendmail_path=/usr/sbin/sendmail -t -i" >> /usr/local/etc/php/conf.d/sendmail.ini
-
-/bin/sh/service sendmail restart
-/bin/sh/echo "$(hostname -i)\t$(hostname) $(hostname).localhost" >> /etc/hosts
-
 cron -f -L 2
+
+/bin/sh/echo "$(hostname -i)\t$(hostname) $(hostname).localhost" >> /etc/hosts
+/bin/sh/service sendmail restart
 
 php-fpm
