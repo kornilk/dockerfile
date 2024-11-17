@@ -64,7 +64,7 @@ fi
 
 cron -f -L 2
 
-/bin/sh/echo "$(hostname -i)\t$(hostname) $(hostname).localhost" >> /etc/hosts
+/bin/sh/echo "$(hostname -i) $(hostname) $(hostname).localhost" >> /etc/hosts
 /bin/sh/service sendmail restart
 
 php-fpm
