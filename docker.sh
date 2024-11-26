@@ -28,9 +28,11 @@ fi
 if [ "$QUENE_MONITORING" = "supervisor" ];
 then rm /etc/supervisor/conf.d/laravel-worker.conf \
 && echo "[supervisord]" >> /etc/supervisor/conf.d/laravel-worker.conf \
+&& echo "stdout_logfile_maxbytes=5MB" >> /etc/supervisor/conf.d/laravel-worker.conf \
 && echo "nodaemon=true" >> /etc/supervisor/conf.d/laravel-worker.conf \
 && echo "" >> /etc/supervisor/conf.d/laravel-worker.conf \
 && echo "[program:laravel-worker]" >> /etc/supervisor/conf.d/laravel-worker.conf \
+&& echo "stdout_logfile_maxbytes=5MB" >> /etc/supervisor/conf.d/laravel-worker.conf \
 && echo "process_name=%(program_name)s_%(process_num)02d" >> /etc/supervisor/conf.d/laravel-worker.conf \
 && echo "command=php /projectroot/artisan queue:work $QUEUE_CONNECTION --sleep=3 --tries=3" >> /etc/supervisor/conf.d/laravel-worker.conf \
 && echo "autostart=true" >> /etc/supervisor/conf.d/laravel-worker.conf \

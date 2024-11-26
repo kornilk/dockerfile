@@ -36,15 +36,17 @@ ENV MAIL_FROM_ADDRESS=
 ENV QUENE_MONITORING=
 ENV QUEUE_CONNECTION=
 
-RUN if [ "$DOCKER_USER" != "root" ]; then adduser --disabled-password --gecos "" -u 1001 ${DOCKER_USER} \
-&& adduser ${DOCKER_USER} www-data \
-&& mkdir $PROJECT_ROOT \
-&& chown -R ${DOCKER_USER}:www-data $PROJECT_ROOT; fi
+# RUN if [ "${DOCKER_USER}" != "root" ]; then groupadd -r -g 1001 ${DOCKER_USER} && useradd -u 1001 -g ${DOCKER_USER} ${DOCKER_USER} \
+# && adduser ${DOCKER_USER} www-data \
+# && mkdir $PROJECT_ROOT \
+# && chown -R ${DOCKER_USER}:www-data $PROJECT_ROOT; fi
 
 RUN echo "[supervisord]" >> /etc/supervisor/conf.d/worker.conf \
 && echo "nodaemon=true" >> /etc/supervisor/conf.d/worker.conf \
+&& echo "stdout_logfile_maxbytes=5MB" >> /etc/supervisor/conf.d/worker.conf \
 && echo "" >> /etc/supervisor/conf.d/worker.conf \
 && echo "[program:php-fpm]" >> /etc/supervisor/conf.d/worker.conf \
+&& echo "stdout_logfile_maxbytes=5MB" >> /etc/supervisor/conf.d/worker.conf \
 && echo "process_name=%(program_name)s_%(process_num)02d" >> /etc/supervisor/conf.d/worker.conf \
 && echo "command = /usr/local/sbin/php-fpm" >> /etc/supervisor/conf.d/worker.conf \
 && echo "autostart=true" >> /etc/supervisor/conf.d/worker.conf \
@@ -53,6 +55,7 @@ RUN echo "[supervisord]" >> /etc/supervisor/conf.d/worker.conf \
 && echo "numprocs=1" >> /etc/supervisor/conf.d/worker.conf \
 && echo "redirect_stderr=true" >> /etc/supervisor/conf.d/worker.conf \
 && echo "[program:cron]" >> /etc/supervisor/conf.d/worker.conf \
+&& echo "stdout_logfile_maxbytes=5MB" >> /etc/supervisor/conf.d/worker.conf \
 && echo "process_name=%(program_name)s_%(process_num)02d" >> /etc/supervisor/conf.d/worker.conf \
 && echo "command = /usr/sbin/cron -f" >> /etc/supervisor/conf.d/worker.conf \
 && echo "autostart=true" >> /etc/supervisor/conf.d/worker.conf \
@@ -62,7 +65,7 @@ RUN echo "[supervisord]" >> /etc/supervisor/conf.d/worker.conf \
 && echo "redirect_stderr=true" >> /etc/supervisor/conf.d/worker.conf
 
 RUN echo "" >> /var/log/supervisor/supervisord.log \
-&& chown ${DOCKER_USER} /var/log/supervisor/supervisord.log \
+&& chown $DOCKER_USER /var/log/supervisor/supervisord.log \
 && sed -i "s/file=\/var\/run\/supervisor.sock/file=\/tmp\/supervisor.sock/g" /etc/supervisor/supervisord.conf \
 && sed -i "s/chmod=0700/chmod=0766/g" /etc/supervisor/supervisord.conf \
 && sed -i "/(default 0700)/a chown=$DOCKER_USER:www-data   ;" /etc/supervisor/supervisord.conf
